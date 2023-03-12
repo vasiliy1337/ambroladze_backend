@@ -1,4 +1,8 @@
 
+using ambroladze_backend.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace ambroladze_backend
 {
     public class Program
@@ -8,6 +12,9 @@ namespace ambroladze_backend
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            builder.Services.AddDbContext<LibContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("LibContext")));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

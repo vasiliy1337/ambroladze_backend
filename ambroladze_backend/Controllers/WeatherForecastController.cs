@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ambroladze_backend.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -18,8 +18,8 @@ namespace ambroladze_backend.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpPost(Name = "PostWeatherForecast")]
+        public IEnumerable<WeatherForecast> Post()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

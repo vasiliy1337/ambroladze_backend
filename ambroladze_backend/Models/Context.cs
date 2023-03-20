@@ -2,9 +2,9 @@
 
 namespace ambroladze_backend.Models
 {
-    public class LibContext : DbContext
+    public class Context : DbContext
     {
-        public LibContext(DbContextOptions<LibContext> options)
+        public Context(DbContextOptions<Context> options)
             : base(options)
         {
             Database.EnsureCreated();
@@ -18,7 +18,7 @@ namespace ambroladze_backend.Models
         }
         */
 
-        public DbSet<Book> Books { get; set; }
+        public DbSet<Order> Orders { get; set; }
         
         public DbSet<User> Users { get; set; }
     }

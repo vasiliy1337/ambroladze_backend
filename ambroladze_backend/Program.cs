@@ -13,8 +13,8 @@ namespace ambroladze_backend
 
             // Add services to the container.
 
-            builder.Services.AddDbContext<LibContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("LibContext")));
+            builder.Services.AddDbContext<Context>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Context")));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -11,35 +11,35 @@ namespace ambroladze_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BooksController : ControllerBase
+    public class OrdersController : ControllerBase
     {
-        private readonly LibContext _context;
+        private readonly Context _context;
 
-        public BooksController(LibContext context)
+        public OrdersController(Context context)
         {
             _context = context;
         }
 
-        // GET: api/Books
+        // GET: api/Orders
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-          if (_context.Books == null)
+          if (_context.Orders == null)
           {
               return NotFound();
           }
-            return await _context.Books.ToListAsync();
+            return await _context.Orders.ToListAsync();
         }
 
-        // GET: api/Books/5
+        // GET: api/Orders/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<Order>> GetBook(int id)
         {
-          if (_context.Books == null)
+          if (_context.Orders == null)
           {
               return NotFound();
           }
-            var book = await _context.Books.FindAsync(id);
+            var book = await _context.Orders.FindAsync(id);
 
             if (book == null)
             {
@@ -49,10 +49,10 @@ namespace ambroladze_backend.Controllers
             return book;
         }
 
-        // PUT: api/Books/5
+        // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> PutBook(int id, Order book)
         {
             if (id != book.Id)
             {
@@ -80,36 +80,36 @@ namespace ambroladze_backend.Controllers
             return NoContent();
         }
 
-        // POST: api/Books
+        // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public async Task<ActionResult<Order>> PostBook(Order book)
         {
-          if (_context.Books == null)
+          if (_context.Orders == null)
           {
-              return Problem("Entity set 'LibContext.Books'  is null.");
+              return Problem("Entity set 'LibContext.Orders'  is null.");
           }
-            _context.Books.Add(book);
+            _context.Orders.Add(book);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBook", new { id = book.Id }, book);
         }
 
-        // DELETE: api/Books/5
+        // DELETE: api/Orders/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            if (_context.Books == null)
+            if (_context.Orders == null)
             {
                 return NotFound();
             }
-            var book = await _context.Books.FindAsync(id);
+            var book = await _context.Orders.FindAsync(id);
             if (book == null)
             {
                 return NotFound();
             }
 
-            _context.Books.Remove(book);
+            _context.Orders.Remove(book);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -117,7 +117,7 @@ namespace ambroladze_backend.Controllers
 
         private bool BookExists(int id)
         {
-            return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Orders?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

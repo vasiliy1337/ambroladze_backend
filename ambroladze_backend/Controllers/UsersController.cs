@@ -13,9 +13,9 @@ namespace ambroladze_backend.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly LibContext _context;
+        private readonly Context _context;
 
-        public UsersController(LibContext context)
+        public UsersController(Context context)
         {
             _context = context;
         }

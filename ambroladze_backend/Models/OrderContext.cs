@@ -2,9 +2,9 @@
 
 namespace ambroladze_backend.Models
 {
-    public class Context : DbContext
+    public class OrderContext : DbContext
     {
-        public Context(DbContextOptions<Context> options)
+        public OrderContext(DbContextOptions<OrderContext> options)
             : base(options)
         {
             Database.EnsureCreated();

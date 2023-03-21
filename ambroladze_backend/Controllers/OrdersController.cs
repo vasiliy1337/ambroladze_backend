@@ -13,9 +13,9 @@ namespace ambroladze_backend.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private readonly Context _context;
+        private readonly OrderContext _context;
 
-        public OrdersController(Context context)
+        public OrdersController(OrderContext context)
         {
             _context = context;
         }

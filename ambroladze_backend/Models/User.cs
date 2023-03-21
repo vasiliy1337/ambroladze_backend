@@ -6,9 +6,9 @@ namespace ambroladze_backend.Models
     public class User
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Login { get; set; }
         public string Email { get; set; }
-        public byte[] Password { get; set; }
+        private byte[] Password { get; set; }
         public string PasswordHash {
             get
             {
@@ -21,13 +21,9 @@ namespace ambroladze_backend.Models
         }
         public string? PhoneNumber { get; set; }
 
-        //public Book Book;
-        
-        /*
-        void AddBook(Book book)
-        {
-            this.Book = book;
-        }
-        */
+        public bool IsAdmin => Login == "admin";
+
+        public bool CheckPassword(string password) => PasswordHash == password;
+    
     }
 }

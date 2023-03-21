@@ -13,7 +13,7 @@ namespace ambroladze_backend
 
             // Add services to the container.
 
-            builder.Services.AddDbContext<Context>(options =>
+            builder.Services.AddDbContext<OrderContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Context")));
 
             builder.Services.AddControllers();

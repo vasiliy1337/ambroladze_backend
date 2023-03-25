@@ -1,7 +1,12 @@
 
 using ambroladze_backend.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ambroladze_backend
 {
@@ -15,6 +20,34 @@ namespace ambroladze_backend
 
             builder.Services.AddDbContext<OrderContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Context")));
+
+
+            //        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+            //options => builder.Configuration.Bind("JwtSettings", options))
+            //    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+            //options => builder.Configuration.Bind("CookieSettings", options));
+
+
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = Auth.Issuer,
+
+                    ValidateAudience = true,
+                    ValidAudience = Auth.Audience,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = Auth.SigningKey,
+
+                    ValidateLifetime = true,
+                };
+            }
+             );
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

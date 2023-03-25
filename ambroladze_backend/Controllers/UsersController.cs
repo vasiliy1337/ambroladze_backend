@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ambroladze_backend.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace ambroladze_backend.Controllers
 {
@@ -14,10 +16,12 @@ namespace ambroladze_backend.Controllers
     public class UsersController : ControllerBase
     {
         private readonly OrderContext _context;
+        private readonly ILogger<WeatherForecastController> _logger;
 
-        public UsersController(OrderContext context)
+        public UsersController(OrderContext context, ILogger<WeatherForecastController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/Users
@@ -97,6 +101,7 @@ namespace ambroladze_backend.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             if (_context.Users == null)

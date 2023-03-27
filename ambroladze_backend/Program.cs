@@ -46,7 +46,7 @@ namespace ambroladze_backend
                     ValidateLifetime = true,
                 };
             }
-             );
+            );
 
 
             builder.Services.AddControllers();

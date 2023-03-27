@@ -21,7 +21,7 @@ namespace ambroladze_backend.Controllers
         public UsersController(OrderContext context, ILogger<WeatherForecastController> logger)
         {
             _context = context;
-            _logger = logger;
+            //_logger = logger;
         }
 
         // GET: api/Users

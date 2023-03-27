@@ -36,7 +36,6 @@ namespace ambroladze_backend.Models
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
             return new { token = encodedJwt };
         }
-
     }
 }
 

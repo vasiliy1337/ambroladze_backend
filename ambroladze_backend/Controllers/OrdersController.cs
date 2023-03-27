@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ambroladze_backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ambroladze_backend.Models;
+using System.Data;
 
 namespace ambroladze_backend.Controllers
 {
@@ -24,42 +22,42 @@ namespace ambroladze_backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-          if (_context.Orders == null)
-          {
-              return NotFound();
-          }
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
             return await _context.Orders.ToListAsync();
         }
 
         // GET: api/Orders/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetBook(int id)
+        public async Task<ActionResult<Order>> GetOrder(int id)
         {
-          if (_context.Orders == null)
-          {
-              return NotFound();
-          }
-            var book = await _context.Orders.FindAsync(id);
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+            var order = await _context.Orders.FindAsync(id);
 
-            if (book == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return book;
+            return order;
         }
 
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Order book)
+        public async Task<IActionResult> PutOrder(int id, Order order)
         {
-            if (id != book.Id)
+            if (id != order.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(book).State = EntityState.Modified;
+            _context.Entry(order).State = EntityState.Modified;
 
             try
             {
@@ -67,7 +65,7 @@ namespace ambroladze_backend.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookExists(id))
+                if (!OrderExists(id))
                 {
                     return NotFound();
                 }
@@ -83,39 +81,47 @@ namespace ambroladze_backend.Controllers
         // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Order>> PostBook(Order book)
+        public async Task<ActionResult<Order>> PostOrder(Order order)
         {
-          if (_context.Orders == null)
-          {
-              return Problem("Entity set 'LibContext.Orders'  is null.");
-          }
-            _context.Orders.Add(book);
+            if (_context.Orders == null)
+            {
+                return Problem("Entity set 'Context.Orders'  is null.");
+            }
+            var user = await _context.Users.FindAsync(order.UserId);
+            var tp = await _context.TypesOfWork.FindAsync(order.TypeId);
+            if (tp == null || user == null) { return NotFound(); }
+
+            order.DateOfEnd = order.DateOfStart.AddDays(tp.Duration);
+            order.UserName = user.Name;
+            order.Description = tp.Name;
+
+            _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
+            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
         }
 
         // DELETE: api/Orders/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id)
+        public async Task<IActionResult> DeleteOrder(int id)
         {
             if (_context.Orders == null)
             {
                 return NotFound();
             }
-            var book = await _context.Orders.FindAsync(id);
-            if (book == null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
             {
                 return NotFound();
             }
 
-            _context.Orders.Remove(book);
+            _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool BookExists(int id)
+        private bool OrderExists(int id)
         {
             return (_context.Orders?.Any(e => e.Id == id)).GetValueOrDefault();
         }

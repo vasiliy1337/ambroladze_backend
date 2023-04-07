@@ -7,6 +7,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
+
 
 namespace ambroladze_backend
 {
@@ -20,14 +22,6 @@ namespace ambroladze_backend
 
             builder.Services.AddDbContext<OrderContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Context")));
-
-
-            //        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-            //options => builder.Configuration.Bind("JwtSettings", options))
-            //    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-            //options => builder.Configuration.Bind("CookieSettings", options));
-
 
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

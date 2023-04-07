@@ -8,42 +8,41 @@ using Microsoft.EntityFrameworkCore;
 using ambroladze_backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using ambroladze_backend.DTO;
 
 namespace ambroladze_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class ClientsController : ControllerBase
     {
         private readonly OrderContext _context;
-        private readonly ILogger<WeatherForecastController> _logger;
 
-        public UsersController(OrderContext context, ILogger<WeatherForecastController> logger)
+        public ClientsController(OrderContext context)
         {
             _context = context;
-            //_logger = logger;
         }
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<Client>>> GetUsers()
         {
-          if (_context.Users == null)
+          if (_context.Clients == null)
           {
               return NotFound();
           }
-            return await _context.Users.ToListAsync();
+            return await _context.Clients.ToListAsync();
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<Client>> GetUser(int id)
         {
-          if (_context.Users == null)
+          if (_context.Clients == null)
           {
               return NotFound();
           }
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Clients.FindAsync(id);
 
             if (user == null)
             {
@@ -56,7 +55,7 @@ namespace ambroladze_backend.Controllers
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, Client user)
         {
             if (id != user.Id)
             {
@@ -87,16 +86,26 @@ namespace ambroladze_backend.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<Client>> PostUser(ClientDTO userDTO)
         {
-          if (_context.Users == null)
-          {
-              return Problem("Entity set 'LibContext.Users'  is null.");
-          }
-            _context.Users.Add(user);
+            if (_context.Clients == null)
+            {
+                return Problem("Entity set 'Context.Users' is null.");
+            }
+            Client user = new Client(userDTO);
+            if (user == null)
+            {
+                return Problem("Error");
+            }
+            if (user.Login.StartsWith("worker_") && (!User.IsInRole("admin")))
+            {
+                return Problem("Workers can only be added by the admin.");
+            }
+
+            _context.Clients.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return StatusCode(201);
         }
 
         // DELETE: api/Users/5
@@ -104,17 +113,17 @@ namespace ambroladze_backend.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            if (_context.Users == null)
+            if (_context.Clients == null)
             {
                 return NotFound();
             }
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Clients.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.Clients.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -122,7 +131,7 @@ namespace ambroladze_backend.Controllers
 
         private bool UserExists(int id)
         {
-            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Clients?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

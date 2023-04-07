@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Reflection.Metadata;
 
 namespace ambroladze_backend.Models
 {
@@ -8,41 +9,23 @@ namespace ambroladze_backend.Models
         public OrderContext(DbContextOptions<OrderContext> options)
             : base(options)
         {
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
-
-        /*
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             base.OnModelCreating(modelBuilder);
 
         }
-        */
 
         public DbSet<TypeOfWork> TypesOfWork { get; set; }
         
-        public DbSet<User> Users { get; set; }
+        public DbSet<Client> Clients { get; set; }
 
         public DbSet<Order> Orders { get; set; }
 
-        //public class DateOnlyConverter : ValueConverter<DateOnly, DateTime>
-        //{
-        //    public DateOnlyConverter()
-        //        : base(dateOnly =>
-        //                dateOnly.ToDateTime(TimeOnly.MinValue),
-        //            dateTime => DateOnly.FromDateTime(dateTime))
-        //    { }
-        //}
 
-        //protected override void ConfigureConventions(ModelConfigurationBuilder builder)
-        //{
 
-        //    builder.Properties<DateOnly>()
-        //        .HaveConversion<DateOnlyConverter>()
-        //        .HaveColumnType("date");
-
-        //    base.ConfigureConventions(builder);
-
-        //}
     }
 }

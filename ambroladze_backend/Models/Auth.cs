@@ -12,15 +12,16 @@ namespace ambroladze_backend.Models
         public static string Issuer => "VA";
         public static string Audience => "APIclients";
         public static int LifetimeInYears => 1;
-        public static SecurityKey SigningKey => new SymmetricSecurityKey(Encoding.ASCII.GetBytes("superSecretKeyMustBeLoooooong"));
+        public static SecurityKey SigningKey => new SymmetricSecurityKey(Encoding.ASCII.GetBytes("qwertyuiop0987654321asdfghjkl,mnbvcxz"));
 
-        internal static object GenerateToken(bool is_admin = false)
+        internal static object GenerateToken(bool is_admin = false, bool is_worker = false)
         {
             var now = DateTime.UtcNow;
             var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, "user"),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, is_admin?"admin":"guest")
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, is_worker?"worker":"guest"),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, is_admin?"admin":"guest"),
                 };
             ClaimsIdentity identity =
             new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,

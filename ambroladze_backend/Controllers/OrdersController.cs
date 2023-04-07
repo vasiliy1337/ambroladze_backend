@@ -1,14 +1,17 @@
-﻿using ambroladze_backend.Models;
+﻿using ambroladze_backend.DTO;
+using ambroladze_backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Security.Cryptography;
 
 namespace ambroladze_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class OrdersController : ControllerBase
     {
         private readonly OrderContext _context;
@@ -81,24 +84,25 @@ namespace ambroladze_backend.Controllers
         // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+        public async Task<ActionResult<Order>> PostOrder(OrderDTO orderDTO)
         {
             if (_context.Orders == null)
             {
                 return Problem("Entity set 'Context.Orders'  is null.");
             }
-            var user = await _context.Users.FindAsync(order.UserId);
-            var tp = await _context.TypesOfWork.FindAsync(order.TypeId);
+            Order order = new Order(orderDTO);
+
+            var user = await _context.Clients.FindAsync(order.ClientId);
+            var tp = await _context.TypesOfWork.FindAsync(order.TypeOfWorkId);
             if (tp == null || user == null) { return NotFound(); }
 
             order.DateOfEnd = order.DateOfStart.AddDays(tp.Duration);
-            order.UserName = user.Name;
-            order.Description = tp.Name;
 
             _context.Orders.Add(order);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
+            return StatusCode(201);
         }
 
         // DELETE: api/Orders/5
@@ -120,6 +124,41 @@ namespace ambroladze_backend.Controllers
 
             return NoContent();
         }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("/sum/{id}")]
+        public async Task<ActionResult<double>> GetSumForUser(int id)
+        {
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+
+            double totalCost = _context.Orders.Include(o => o.TypeOfWork).ToList().Where(o => o.ClientId == id).Sum(o => o.TypeOfWork.Cost);
+
+            return totalCost;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //[HttpGet("/top")]
+        //public async Task<ActionResult<Order>> GetTop()
+        //{
+        //    if (_context.Orders == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    //var orderTop = _context.Orders.Select(o => o.TypeOfWorkId).Join(_context.Orders.Include(o => o.TypeOfWork).Select(o => o.TypeOfWork.Name).Count());
+
+        //    //var orderTop = 
+
+        //    return orderTop;
+        //}
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         private bool OrderExists(int id)
         {

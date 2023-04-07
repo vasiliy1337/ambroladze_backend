@@ -1,4 +1,5 @@
-﻿using ambroladze_backend.Models;
+﻿using ambroladze_backend.DTO;
+using ambroladze_backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -50,6 +51,7 @@ namespace ambroladze_backend.Controllers
         // PUT: api/TypesOfWork/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        //[Authorize(Roles = "admin, worker")]
         public async Task<IActionResult> PutTypeOfWork(int id, TypeOfWork tp)
         {
             if (id != tp.Id)
@@ -81,21 +83,23 @@ namespace ambroladze_backend.Controllers
         // POST: api/TypesOfWork
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TypeOfWork>> PostTypeOfWork(TypeOfWork tp)
+        [Authorize(Roles = "admin, worker")]
+        public async Task<ActionResult<TypeOfWork>> PostTypeOfWork(TypeOfWorkDTO tpDTO)
         {
             if (_context.TypesOfWork == null)
             {
                 return Problem("Entity set 'OrderContext.TypesOfWork'  is null.");
             }
+            TypeOfWork tp = new TypeOfWork(tpDTO);
             _context.TypesOfWork.Add(tp);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTypeOfWork", new { id = tp.Id }, tp);
+            return StatusCode(201);
         }
 
         // DELETE: api/TypesOfWork/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, worker")]
         public async Task<IActionResult> DeleteTypeOfWork(int id)
         {
             if (_context.TypesOfWork == null)
@@ -118,5 +122,8 @@ namespace ambroladze_backend.Controllers
         {
             return (_context.TypesOfWork?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
     }
 }

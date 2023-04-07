@@ -43,18 +43,18 @@ namespace ambroladze_backend.Controllers
         public object GetToken([FromBody] LoginData ld)
         {
             ld.password = HashStr(ld.password);
-            var user = _context.Users.FirstOrDefault(u => u.Login == ld.login && u.PasswordHash == ld.password);
+            var user = _context.Clients.FirstOrDefault(u => u.Login == ld.login && u.Password == ld.password);
             if (user == null)
             {
                 Response.StatusCode = 401;
                 return new { message = "wrong login/password" };
             }
-            return Auth.GenerateToken(user.IsAdmin);
+            return Auth.GenerateToken(user.IsAdmin, user.IsWorker);
         }
         [HttpGet("users")]
-        public List<User> GetUsers()
+        public List<Client> GetUsers()
         {
-            return _context.Users.ToList();
+            return _context.Clients.ToList();
         }
         [HttpGet("token")]
         public object GetToken()
@@ -65,6 +65,11 @@ namespace ambroladze_backend.Controllers
         public object GetAdminToken()
         {
             return Auth.GenerateToken(true);
+        }
+        [HttpGet("token/worker")]
+        public object GetWorkerToken()
+        {
+            return Auth.GenerateToken(false, true);
         }
     }
 }

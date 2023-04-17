@@ -83,7 +83,7 @@ namespace ambroladze_backend.Controllers
         // POST: api/TypesOfWork
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Roles = "admin, worker")]
+        //[Authorize(Roles = "admin, worker")]
         public async Task<ActionResult<TypeOfWork>> PostTypeOfWork(TypeOfWorkDTO tpDTO)
         {
             if (_context.TypesOfWork == null)

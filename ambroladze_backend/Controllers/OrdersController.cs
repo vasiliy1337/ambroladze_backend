@@ -2,9 +2,13 @@
 using ambroladze_backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Data;
+using System.Net;
+using System;
 using System.Security.Cryptography;
 
 namespace ambroladze_backend.Controllers
@@ -142,23 +146,73 @@ namespace ambroladze_backend.Controllers
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //[HttpGet("/top")]
-        //public async Task<ActionResult<Order>> GetTop()
-        //{
-        //    if (_context.Orders == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public class ForTop
+        {
+            public int id { get; set; }
+            public int count { get; set; }
+        }
 
-        //    //var orderTop = _context.Orders.Select(o => o.TypeOfWorkId).Join(_context.Orders.Include(o => o.TypeOfWork).Select(o => o.TypeOfWork.Name).Count());
+        [HttpGet("/top")]
+        public async Task<ActionResult<List<ForTop>>> GetTop()
+        {
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
 
-        //    //var orderTop = 
+            List <ForTop> result = await _context.Orders.Include(o => o.TypeOfWork).GroupBy(o => o.TypeOfWorkId)
+                  .OrderByDescending(gp => gp.Count())
+                  .Take(5).Select(g => new ForTop { id = g.Key, count = g.Count() }).ToListAsync();
 
-        //    return orderTop;
-        //}
+            return result;
+        }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [HttpGet("/OrdersByClient/{id}")]
+        public async Task<ActionResult<List<Order>>> GetOrdersByClientId(int id)
+        {
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+
+            var result = _context.Orders.Where(o => o.ClientId == id).ToList();
+
+            return result;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("/ClientsByType/{id}")]
+        public async Task<ActionResult<List<Client>>> GetClientsByTypeId(int id)
+        {
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+
+            var result = _context.Orders.Include(o => o.Client).Where(o => o.TypeOfWorkId == id).GroupBy(c => c.ClientId).Select(grp => grp.First()).Select(o => o.Client).ToList();
+
+            return result;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("/TypesByClient/{id}")]
+        public async Task<ActionResult<List<TypeOfWork>>> GetTypesByClientId(int id)
+        {
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+
+            var result = _context.Orders.Include(o => o.TypeOfWork).Where(o => o.ClientId == id).GroupBy(c => c.ClientId).Select(grp => grp.First()).Select(o => o.TypeOfWork).ToList();
+
+            return result;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         private bool OrderExists(int id)
         {

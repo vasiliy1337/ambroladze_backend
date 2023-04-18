@@ -192,7 +192,8 @@ namespace ambroladze_backend.Controllers
                 return NotFound();
             }
 
-            var result = _context.Orders.Include(o => o.Client).Where(o => o.TypeOfWorkId == id).GroupBy(c => c.ClientId).Select(grp => grp.First()).Select(o => o.Client).ToList();
+            var result = _context.Orders.Include(o => o.Client).Where(o => o.TypeOfWorkId == id).Select(o => o.Client)
+                .GroupBy(x => x.Id).Select(g => g.First()).ToList();
 
             return result;
         }
@@ -207,7 +208,8 @@ namespace ambroladze_backend.Controllers
                 return NotFound();
             }
 
-            var result = _context.Orders.Include(o => o.TypeOfWork).Where(o => o.ClientId == id).GroupBy(c => c.ClientId).Select(grp => grp.First()).Select(o => o.TypeOfWork).ToList();
+            var result = _context.Orders.Include(o => o.TypeOfWork).Where(o => o.ClientId == id).Select(o => o.TypeOfWork)
+                .GroupBy(x => x.Id).Select(g => g.First()).ToList();
 
             return result;
         }

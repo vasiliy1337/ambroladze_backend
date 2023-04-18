@@ -19,10 +19,10 @@ namespace ambroladze_backend
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddCors();
 
             builder.Services.AddDbContext<OrderContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Context")));
-
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -42,7 +42,6 @@ namespace ambroladze_backend
             }
             );
 
-
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -56,6 +55,12 @@ namespace ambroladze_backend
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors(cpb => cpb
+                .SetIsOriginAllowed(_ => true)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+            );
 
             app.UseHttpsRedirection();
 

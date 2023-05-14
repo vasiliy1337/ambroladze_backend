@@ -10,6 +10,7 @@ using System.Data;
 using System.Net;
 using System;
 using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ambroladze_backend.Controllers
 {
@@ -33,7 +34,9 @@ namespace ambroladze_backend.Controllers
             {
                 return NotFound();
             }
-            return await _context.Orders.ToListAsync();
+            var orders = await _context.Orders.ToListAsync();
+
+            return orders;
         }
 
         // GET: api/Orders/5
@@ -131,7 +134,9 @@ namespace ambroladze_backend.Controllers
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("/sum/{id}")]
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("sum/{id}")]
         public async Task<ActionResult<double>> GetSumForUser(int id)
         {
             if (_context.Orders == null)
@@ -152,7 +157,7 @@ namespace ambroladze_backend.Controllers
             public int count { get; set; }
         }
 
-        [HttpGet("/top")]
+        [HttpGet("top")]
         public async Task<ActionResult<List<ForTop>>> GetTop()
         {
             if (_context.Orders == null)
@@ -169,7 +174,7 @@ namespace ambroladze_backend.Controllers
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("/OrdersByClient/{id}")]
+        [HttpGet("OrdersByClient/{id}")]
         public async Task<ActionResult<List<Order>>> GetOrdersByClientId(int id)
         {
             if (_context.Orders == null)
@@ -184,7 +189,7 @@ namespace ambroladze_backend.Controllers
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("/ClientsByType/{id}")]
+        [HttpGet("ClientsByType/{id}")]
         public async Task<ActionResult<List<Client>>> GetClientsByTypeId(int id)
         {
             if (_context.Orders == null)
@@ -200,7 +205,7 @@ namespace ambroladze_backend.Controllers
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("/TypesByClient/{id}")]
+        [HttpGet("TypesByClient/{id}")]
         public async Task<ActionResult<List<TypeOfWork>>> GetTypesByClientId(int id)
         {
             if (_context.Orders == null)
@@ -220,5 +225,31 @@ namespace ambroladze_backend.Controllers
         {
             return (_context.Orders?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("json/")]
+        public async Task<ActionResult<IEnumerable<OrderOutDTO>>> GetOrdersForFront()
+        {
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+            //var orders = await _context.Orders.Include(o => o.TypeOfWork).Include(o => o.Client).Select(new OrderOutDTO() { Id = })
+            List<OrderOutDTO> orders = (from o in _context.Orders
+                                        select new OrderOutDTO()
+                                        {
+                                            Id = o.Id,
+                                            Address = o.Address,
+                                            ClientName = o.Client.Name,
+                                            TypeName = o.TypeOfWork.Name,
+                                            DateOfEnd = o.DateOfEnd,
+                                            DateOfStart = o.DateOfStart
+                                        }).ToList();
+
+            return orders;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }

@@ -51,7 +51,7 @@ namespace ambroladze_backend.Controllers
         // PUT: api/TypesOfWork/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        //[Authorize(Roles = "admin, worker")]
+        //[Authorize(Roles = "admin")]
         public async Task<IActionResult> PutTypeOfWork(int id, TypeOfWork tp)
         {
             if (id != tp.Id)
@@ -83,7 +83,7 @@ namespace ambroladze_backend.Controllers
         // POST: api/TypesOfWork
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        //[Authorize(Roles = "admin, worker")]
+        //[Authorize(Roles = "admin")]
         public async Task<ActionResult<TypeOfWork>> PostTypeOfWork(TypeOfWorkDTO tpDTO)
         {
             if (_context.TypesOfWork == null)
@@ -99,7 +99,7 @@ namespace ambroladze_backend.Controllers
 
         // DELETE: api/TypesOfWork/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "admin, worker")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteTypeOfWork(int id)
         {
             if (_context.TypesOfWork == null)
@@ -124,6 +124,55 @@ namespace ambroladze_backend.Controllers
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+        ///
+
+        [HttpGet("search/{name}")]
+        public async Task<ActionResult<IEnumerable<TypeOfWorkOutDTO>>> SearchTypeOfWork(string name)
+        {
+            if (_context.TypesOfWork == null)
+            {
+                return NotFound();
+            }
+            //var tp = _context.TypesOfWork.Where(t => t.Name.StartsWith(name)).First();
+            List<TypeOfWorkOutDTO> types = (from o in _context.TypesOfWork
+                                            where o.Name.StartsWith(name)
+                                            select new TypeOfWorkOutDTO()
+                                            {
+                                                Id = o.Id,
+                                                Name = o.Name,
+                                                Description = o.Description,
+                                                Duration = o.Duration,
+                                                Cost = o.Cost
+                                            } ).ToList();
+            if (types == null)
+            {
+                return NotFound();
+            }
+            return types;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("/api/Types/json/")]
+        public async Task<ActionResult<IEnumerable<TypeOfWorkOutDTO>>> GetOrdersForFront()
+        {
+            if (_context.TypesOfWork == null)
+            {
+                return NotFound();
+            }
+            //var orders = await _context.Orders.Include(o => o.TypeOfWork).Include(o => o.Client).Select(new OrderOutDTO() { Id = })
+            List<TypeOfWorkOutDTO> types = (from o in _context.TypesOfWork
+                                            select new TypeOfWorkOutDTO()
+                                            {
+                                                Id = o.Id,
+                                                Name = o.Name,
+                                                Description = o.Description,
+                                                Duration = o.Duration,
+                                                Cost = o.Cost
+                                            }).ToList();
+
+            return types;
+        }
+
     }
 }

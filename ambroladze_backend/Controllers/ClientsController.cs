@@ -133,5 +133,30 @@ namespace ambroladze_backend.Controllers
         {
             return (_context.Clients?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("json/")]
+        public async Task<ActionResult<IEnumerable<ClientOutDTO>>> GetClientsForFront()
+        {
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+            //var orders = await _context.Orders.Include(o => o.TypeOfWork).Include(o => o.Client).Select(new OrderOutDTO() { Id = })
+            List<ClientOutDTO> result = (from c in _context.Clients
+                                        select new ClientOutDTO()
+                                        {
+                                            Id = c.Id, 
+                                            Name = c.Name, 
+                                            Email = c.Email, 
+                                            Login = c.Login, 
+                                            //Password = c.Password, 
+                                            PhoneNumber = c.PhoneNumber
+                                        }).ToList();
+
+            return result;
+        }
     }
 }

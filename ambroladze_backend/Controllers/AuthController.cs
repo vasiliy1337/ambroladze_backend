@@ -49,7 +49,7 @@ namespace ambroladze_backend.Controllers
                 Response.StatusCode = 401;
                 return new { message = "wrong login/password" };
             }
-            return Auth.GenerateToken(user.IsAdmin, user.IsWorker);
+            return Auth.GenerateToken(user.IsAdmin/*, user.IsWorker*/);
         }
         [HttpGet("users")]
         public List<Client> GetUsers()
@@ -66,10 +66,10 @@ namespace ambroladze_backend.Controllers
         {
             return Auth.GenerateToken(true);
         }
-        [HttpGet("token/worker")]
-        public object GetWorkerToken()
-        {
-            return Auth.GenerateToken(false, true);
-        }
+        //[HttpGet("token/worker")]
+        //public object GetWorkerToken()
+        //{
+        //    return Auth.GenerateToken(false, true);
+        //}
     }
 }

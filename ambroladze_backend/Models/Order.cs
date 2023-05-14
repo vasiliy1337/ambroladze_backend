@@ -21,7 +21,6 @@ namespace ambroladze_backend.Models
 
         public Order() { }
 
-
         public Order(OrderDTO odto)
         {
             TypeOfWorkId = odto.TypeId;

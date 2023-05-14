@@ -25,7 +25,7 @@ namespace ambroladze_backend.Models
 
         public bool IsAdmin => Login == "admin";
 
-        public bool IsWorker => Login.StartsWith("woker_");
+        //public bool IsWorker => Login.StartsWith("woker_");
 
         public bool CheckPassword(string password) => Password == password;
 

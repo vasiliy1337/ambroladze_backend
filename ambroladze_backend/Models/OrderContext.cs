@@ -10,13 +10,12 @@ namespace ambroladze_backend.Models
             : base(options)
         {
             //Database.EnsureDeleted();
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
+            Database.Migrate();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             base.OnModelCreating(modelBuilder);
-
         }
 
         public DbSet<TypeOfWork> TypesOfWork { get; set; }

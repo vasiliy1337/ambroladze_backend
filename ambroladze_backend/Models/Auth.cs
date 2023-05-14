@@ -20,7 +20,7 @@ namespace ambroladze_backend.Models
             var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, "user"),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, is_worker?"worker":"guest"),
+                    //new Claim(ClaimsIdentity.DefaultRoleClaimType, is_worker?"worker":"guest"),
                     new Claim(ClaimsIdentity.DefaultRoleClaimType, is_admin?"admin":"guest"),
                 };
             ClaimsIdentity identity =

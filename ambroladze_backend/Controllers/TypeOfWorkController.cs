@@ -21,13 +21,24 @@ namespace ambroladze_backend.Controllers
 
         // GET: api/TypesOfWork
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TypeOfWork>>> GetTypeOfWork()
+        public async Task<ActionResult<IEnumerable<TypeOfWorkOutDTO>>> GetTypeOfWork()
         {
             if (_context.TypesOfWork == null)
             {
                 return NotFound();
             }
-            return await _context.TypesOfWork.ToListAsync();
+            //var orders = await _context.Orders.Include(o => o.TypeOfWork).Include(o => o.Client).Select(new OrderOutDTO() { Id = })
+            List<TypeOfWorkOutDTO> types = (from o in _context.TypesOfWork
+                                            select new TypeOfWorkOutDTO()
+                                            {
+                                                Id = o.Id,
+                                                Name = o.Name,
+                                                Description = o.Description,
+                                                Duration = o.Duration,
+                                                Cost = o.Cost
+                                            }).ToList();
+
+            return types;
         }
 
         // GET: api/TypesOfWork/5
@@ -98,8 +109,8 @@ namespace ambroladze_backend.Controllers
         }
 
         // DELETE: api/TypesOfWork/5
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "admin")]
+        [HttpDelete]
+        //[Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteTypeOfWork(int id)
         {
             if (_context.TypesOfWork == null)
@@ -126,7 +137,7 @@ namespace ambroladze_backend.Controllers
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
 
-        [HttpGet("search/{name}")]
+        [HttpGet("search/")]
         public async Task<ActionResult<IEnumerable<TypeOfWorkOutDTO>>> SearchTypeOfWork(string name)
         {
             if (_context.TypesOfWork == null)
@@ -173,6 +184,7 @@ namespace ambroladze_backend.Controllers
 
             return types;
         }
+
 
     }
 }

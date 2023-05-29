@@ -11,6 +11,8 @@ using System.Net;
 using System;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using NuGet.Versioning;
+using System.Security.Claims;
 
 namespace ambroladze_backend.Controllers
 {
@@ -28,13 +30,50 @@ namespace ambroladze_backend.Controllers
 
         // GET: api/Orders
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<OrderOutDTO>>> GetOrders()
         {
             if (_context.Orders == null)
             {
                 return NotFound();
             }
-            var orders = await _context.Orders.ToListAsync();
+            if (User == null)
+            {
+                return Unauthorized();
+            }
+            List<OrderOutDTO> orders = new List<OrderOutDTO>();
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            int id;
+            int.TryParse(User.FindFirst("id")?.Value, out id);
+            if (role == "admin")
+            {
+                orders = (from o in _context.Orders
+                                        select new OrderOutDTO()
+                                        {
+                                            Id = o.Id,
+                                            Address = o.Address,
+                                            ClientName = o.Client.Name,
+                                            TypeName = o.TypeOfWork.Name,
+                                            DateOfEnd = o.DateOfEnd,
+                                            DateOfStart = o.DateOfStart
+                                        }).ToList();
+            }
+            else
+            {
+                orders = (from o in _context.Orders where o.ClientId == id
+                          select new OrderOutDTO()
+                          {
+                              Id = o.Id,
+                              Address = o.Address,
+                              ClientName = o.Client.Name,
+                              TypeName = o.TypeOfWork.Name,
+                              DateOfEnd = o.DateOfEnd,
+                              DateOfStart = o.DateOfStart
+                          }).ToList();
+            }
+
+            
+            //var orders = await _context.Orders.Include(o => o.TypeOfWork).Include(o => o.Client).Select(new OrderOutDTO() { Id = })
+            
 
             return orders;
         }
@@ -114,6 +153,7 @@ namespace ambroladze_backend.Controllers
 
         // DELETE: api/Orders/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             if (_context.Orders == null)
@@ -174,22 +214,27 @@ namespace ambroladze_backend.Controllers
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("OrdersByClient/{id}")]
+        [HttpGet("OrdersByClient/")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<Order>>> GetOrdersByClientId(int id)
         {
             if (_context.Orders == null)
             {
                 return NotFound();
             }
+            List <Order> result = new List<Order>();
+            if (User.FindFirst("id")?.Value == id.ToString()) {
+                result = _context.Orders.Where(o => o.ClientId == id).ToList();
+            }
 
-            var result = _context.Orders.Where(o => o.ClientId == id).ToList();
 
             return result;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("ClientsByType/{id}")]
+        [HttpGet("ClientsByType/")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<Client>>> GetClientsByTypeId(int id)
         {
             if (_context.Orders == null)
@@ -205,7 +250,8 @@ namespace ambroladze_backend.Controllers
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("TypesByClient/{id}")]
+        [HttpGet("TypesByClient/")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<TypeOfWork>>> GetTypesByClientId(int id)
         {
             if (_context.Orders == null)
@@ -251,5 +297,21 @@ namespace ambroladze_backend.Controllers
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+
+        [HttpGet("sumbydate/")]
+        public async Task<ActionResult<double>> SumByDate(DateTime start, DateTime end)
+        {
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+
+            double totalCost = _context.Orders.Include(o => o.TypeOfWork).ToList().Where(o => o.DateOfEnd>=start && o.DateOfEnd<=end).Sum(o => o.TypeOfWork.Cost);
+
+            return totalCost;
+        }
+
+
     }
 }

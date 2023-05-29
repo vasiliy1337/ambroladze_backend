@@ -49,23 +49,23 @@ namespace ambroladze_backend.Controllers
                 Response.StatusCode = 401;
                 return new { message = "wrong login/password" };
             }
-            return Auth.GenerateToken(user.IsAdmin/*, user.IsWorker*/);
+            return Auth.GenerateToken(user/*, user.IsWorker*/);
         }
         [HttpGet("users")]
         public List<Client> GetUsers()
         {
             return _context.Clients.ToList();
         }
-        [HttpGet("token")]
-        public object GetToken()
-        {
-            return Auth.GenerateToken();
-        }
-        [HttpGet("token/secret")]
-        public object GetAdminToken()
-        {
-            return Auth.GenerateToken(true);
-        }
+        //[HttpGet("token")]
+        //public object GetToken()
+        //{
+        //    return Auth.GenerateToken();
+        //}
+        //[HttpGet("token/secret")]
+        //public object GetAdminToken()
+        //{
+        //    return Auth.GenerateToken(true);
+        //}
         //[HttpGet("token/worker")]
         //public object GetWorkerToken()
         //{

@@ -25,13 +25,25 @@ namespace ambroladze_backend.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Client>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<ClientOutDTO>>> GetUsers()
         {
-          if (_context.Clients == null)
-          {
-              return NotFound();
-          }
-            return await _context.Clients.ToListAsync();
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+            //var orders = await _context.Orders.Include(o => o.TypeOfWork).Include(o => o.Client).Select(new OrderOutDTO() { Id = })
+            List<ClientOutDTO> result = (from c in _context.Clients
+                                         select new ClientOutDTO()
+                                         {
+                                             Id = c.Id,
+                                             Name = c.Name,
+                                             Email = c.Email,
+                                             Login = c.Login,
+                                             //Password = c.Password, 
+                                             PhoneNumber = c.PhoneNumber
+                                         }).ToList();
+
+            return result;
         }
 
         // GET: api/Users/5
